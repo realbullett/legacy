@@ -7,7 +7,13 @@ getgenv().Notifier = true
 
 getgenv().FOV_VISIBLE = false
 
+getgenv().DontShootThesePeople = {
  
+	"Nexus";
+	"Nexus";
+ 
+}
+
 local SilentAim = true
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Players = game:GetService("Players")
