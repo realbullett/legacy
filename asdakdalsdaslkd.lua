@@ -14,6 +14,20 @@ getgenv().DontShootThesePeople = {
  
 }
 
+local Y = -0
+game:GetService("RunService").RenderStepped:Connect(function()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local oldVel = character.HumanoidRootPart.Velocity
+                character.HumanoidRootPart.Velocity = Vector3.new(oldVel.X, Y, oldVel.Z)
+            end
+        end
+    end
+end)
+
+
 local SilentAim = true
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Players = game:GetService("Players")
