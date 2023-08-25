@@ -1,8 +1,13 @@
 getgenv().Prediction =  (  .14  )
+
 getgenv().FOV =  (  150  ) 
+
 getgenv().AimKey =  (  "x"  )
+
 getgenv().Notifier = true
+
 getgenv().FOV_VISIBLE = false
+
  
 local SilentAim = true
 local LocalPlayer = game:GetService("Players").LocalPlayer
