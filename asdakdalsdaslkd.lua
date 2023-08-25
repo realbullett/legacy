@@ -1,3 +1,5 @@
+getgenv().Prediction =  (  .14  )
+
 getgenv().FOV =  (  150  ) 
 getgenv().AimKey =  (  "x"  )
 getgenv().Notifier = true
