@@ -45,13 +45,13 @@ local function MoveFovCircle()
 	end)
 end coroutine.wrap(MoveFovCircle)()
  
-game.StarterGui:SetCore("SendNotification", {Title = "Nexus", Text = "Hey, I've been summoned! Nexus is now ON", Duration = 5,}) -- initially on.
+game.StarterGui:SetCore("SendNotification", {Title = "Nexus", Text = "Hey, I've been summoned! Nexus is now ON", Icon = "http://www.roblox.com/asset/?id=13961282091", Duration = 5,}) -- initially on.
  
 local function ItsOn()
-	game.StarterGui:SetCore("SendNotification", {Title = "Nexus", Text = "Hey, I've been summoned! Nexus is now ON", Duration = 5,})
+	game.StarterGui:SetCore("SendNotification", {Title = "Nexus", Text = "Hey, I've been summoned! Nexus is now ON", Icon = "http://www.roblox.com/asset/?id=13961282091", Duration = 5,})
 end
 local function ItsOff()
-	game.StarterGui:SetCore("SendNotification", {Title = "Nexus", Text = "Uh-Oh I've been turned off", Duration = 5,})
+	game.StarterGui:SetCore("SendNotification", {Title = "Nexus", Text = "Uh-Oh I've been turned off", Icon = "http://www.roblox.com/asset/?id=13961282091", Duration = 5,})
 end
  
 Mouse.KeyDown:Connect(function(KeyPressed)
