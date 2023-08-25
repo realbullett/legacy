@@ -1,4 +1,3 @@
-getgenv().Prediction =  (  .14  )
 
 getgenv().FOV =  (  150  ) 
 
