@@ -1,0 +1,190 @@
+-- Configuration
+local HeadSize = 10 -- Enlarged hitbox size
+local DefaultHeadSize = 2 -- Original hitbox size
+local IsHitboxVisible = true -- Hitbox will be visible from the start
+local IsColorDisabled = true -- Controls grey color visibility
+local IsTeamCheckEnabled = false -- Enables team check
+
+local Players = game:GetService('Players')
+local RunService = game:GetService('RunService')
+local UserInputService = game:GetService('UserInputService')
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local TitleLabel = Instance.new("TextLabel")
+local AdjustHitboxSlider = Instance.new("TextBox")
+local ToggleHitboxVisibilityButton = Instance.new("TextButton")
+local ResetHitboxSizeButton = Instance.new("TextButton")
+local ToggleColorButton = Instance.new("TextButton") -- Added button to toggle color
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "HitboxGui"
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)  -- Centering frame
+MainFrame.Size = UDim2.new(0, 400, 0, 250)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Parent = MainFrame
+TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TitleLabel.BorderSizePixel = 0
+TitleLabel.Size = UDim2.new(1, 0, 0.2, 0)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Text = "👑"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 24
+
+AdjustHitboxSlider.Name = "AdjustHitboxSlider"
+AdjustHitboxSlider.Parent = MainFrame
+AdjustHitboxSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+AdjustHitboxSlider.BorderSizePixel = 0
+AdjustHitboxSlider.Position = UDim2.new(0.1, 0, 0.3, 0)
+AdjustHitboxSlider.Size = UDim2.new(0.8, 0, 0.15, 0)
+AdjustHitboxSlider.Font = Enum.Font.SourceSans
+AdjustHitboxSlider.Text = tostring(HeadSize)
+AdjustHitboxSlider.PlaceholderText = "Set Hitbox Size"
+AdjustHitboxSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+AdjustHitboxSlider.TextSize = 18
+
+ToggleHitboxVisibilityButton.Name = "ToggleHitboxVisibilityButton"
+ToggleHitboxVisibilityButton.Parent = MainFrame
+ToggleHitboxVisibilityButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+ToggleHitboxVisibilityButton.BorderSizePixel = 0
+ToggleHitboxVisibilityButton.Position = UDim2.new(0.1, 0, 0.5, 0)
+ToggleHitboxVisibilityButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+ToggleHitboxVisibilityButton.Font = Enum.Font.SourceSansBold
+ToggleHitboxVisibilityButton.Text = "Toggle Hitbox Visibility"
+ToggleHitboxVisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleHitboxVisibilityButton.TextSize = 18
+
+ResetHitboxSizeButton.Name = "ResetHitboxSizeButton"
+ResetHitboxSizeButton.Parent = MainFrame
+ResetHitboxSizeButton.BackgroundColor3 = Color3.fromRGB(90, 20, 20)
+ResetHitboxSizeButton.BorderSizePixel = 0
+ResetHitboxSizeButton.Position = UDim2.new(0.1, 0, 0.7, 0)
+ResetHitboxSizeButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+ResetHitboxSizeButton.Font = Enum.Font.SourceSansBold
+ResetHitboxSizeButton.Text = "Reset Hitbox Size"
+ResetHitboxSizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetHitboxSizeButton.TextSize = 18
+
+ToggleColorButton.Name = "ToggleColorButton"
+ToggleColorButton.Parent = MainFrame
+ToggleColorButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleColorButton.BorderSizePixel = 0
+ToggleColorButton.Position = UDim2.new(0.1, 0, 0.85, 0)
+ToggleColorButton.Size = UDim2.new(0.8, 0, 0.15, 0)
+ToggleColorButton.Font = Enum.Font.SourceSansBold
+ToggleColorButton.Text = "Toggle Color"
+ToggleColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleColorButton.TextSize = 18
+
+-- Enable Draggable Frame
+local dragging = false
+local dragInput, mousePos, framePos
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        mousePos = input.Position
+        framePos = MainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - mousePos
+        MainFrame.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Functions
+local function toggleHitboxVisibility()
+    IsHitboxVisible = not IsHitboxVisible
+end
+
+local function resetHitboxSize()
+    HeadSize = DefaultHeadSize
+    AdjustHitboxSlider.Text = tostring(HeadSize)
+end
+
+local function toggleColorVisibility()
+    IsColorDisabled = not IsColorDisabled
+    ToggleColorButton.Text = IsColorDisabled and "Enable Color" or "Disable Color"
+end
+
+AdjustHitboxSlider.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local input = tonumber(AdjustHitboxSlider.Text)
+        if input then
+            HeadSize = input
+        else
+            AdjustHitboxSlider.Text = tostring(HeadSize) -- Reset to the last valid input
+        end
+    end
+end)
+
+ToggleHitboxVisibilityButton.MouseButton1Click:Connect(toggleHitboxVisibility)
+ResetHitboxSizeButton.MouseButton1Click:Connect(resetHitboxSize)
+ToggleColorButton.MouseButton1Click:Connect(toggleColorVisibility)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent then
+        if input.KeyCode == Enum.KeyCode.Insert then
+            MainFrame.Visible = not MainFrame.Visible
+        end
+    end
+end)
+
+-- Main Logic
+RunService.RenderStepped:Connect(function()
+    local localPlayer = Players.LocalPlayer
+    if not localPlayer then return end
+
+    local localPlayerTeam = localPlayer.Team
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer and (not IsTeamCheckEnabled or player.Team ~= localPlayerTeam) then
+            local humanoidRootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if humanoidRootPart then
+                -- Adjusting hitbox size based on toggle
+                humanoidRootPart.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
+                humanoidRootPart.CanCollide = false
+
+                if IsHitboxVisible then
+                    -- Make hitbox visible to you
+                    humanoidRootPart.Transparency = 0.5
+                    humanoidRootPart.BrickColor = BrickColor.new("Bright yellow")
+                    humanoidRootPart.Material = Enum.Material.Neon
+                else
+                    -- Hide hitbox if needed
+                    humanoidRootPart.Transparency = 1
+                end
+
+                if IsColorDisabled then
+                    humanoidRootPart.BrickColor = BrickColor.new("Medium stone grey")
+                    humanoidRootPart.Material = Enum.Material.Neon
+                else
+                    humanoidRootPart.BrickColor = BrickColor.new("Institutional white")
+                    humanoidRootPart.Material = Enum.Material.Plastic
+                end
+            end
+        end
+    end
+end)
