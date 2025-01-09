@@ -27,7 +27,7 @@ MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 2
 MainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)  -- Centering frame
-MainFrame.Size = UDim2.new(0, 400, 0, 250)
+MainFrame.Size = UDim2.new(0, 300, 0, 250)
 MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 
 TitleLabel.Name = "TitleLabel"
@@ -36,7 +36,7 @@ TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TitleLabel.BorderSizePixel = 0
 TitleLabel.Size = UDim2.new(1, 0, 0.2, 0)
 TitleLabel.Font = Enum.Font.SourceSansBold
-TitleLabel.Text = "👑"
+TitleLabel.Text = "Hitbox GUI"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.TextSize = 24
 
@@ -145,15 +145,22 @@ ToggleHitboxVisibilityButton.MouseButton1Click:Connect(toggleHitboxVisibility)
 ResetHitboxSizeButton.MouseButton1Click:Connect(resetHitboxSize)
 ToggleColorButton.MouseButton1Click:Connect(toggleColorVisibility)
 
+-- Main Logic (UI Toggle with Insert or Right Shift)
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
-        if input.KeyCode == Enum.KeyCode.Insert then
+        -- Check for Insert key press (for toggling UI visibility)
+        if input.KeyCode == Enum.KeyCode.V then
+            MainFrame.Visible = not MainFrame.Visible
+        end
+        
+        -- Check for Right Shift key press (for toggling UI visibility)
+        if input.KeyCode == Enum.KeyCode.RightShift then
             MainFrame.Visible = not MainFrame.Visible
         end
     end
 end)
 
--- Main Logic
+-- Main Logic for hitbox visibility and size adjustment
 RunService.RenderStepped:Connect(function()
     local localPlayer = Players.LocalPlayer
     if not localPlayer then return end
@@ -188,3 +195,11 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+
+-- Basic notification using SetCore
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "👑",        -- Title of the notification
+    Text = "V to toggle UI", -- Text content of the notification
+    Icon = "rbxassetid://1234567890",     -- Optional: Asset ID of an icon (you can use an image from the Roblox asset library)
+    Duration = 5                          -- Duration in seconds (default is 5 seconds)
+})
