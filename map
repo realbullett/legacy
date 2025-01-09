@@ -1,0 +1,240 @@
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local TitleLabel = Instance.new("TextLabel")
+local PlayerInputBox = Instance.new("TextBox")
+local ViewButton = Instance.new("TextButton")
+local UnviewButton = Instance.new("TextButton")
+local AddButton = Instance.new("TextButton")
+local RemoveButton = Instance.new("TextButton")
+local ESPListLabel = Instance.new("TextLabel")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "CombinedGui"
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+MainFrame.Size = UDim2.new(0, 300, 0, 400)
+
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Parent = MainFrame
+TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TitleLabel.BorderSizePixel = 0
+TitleLabel.Size = UDim2.new(1, 0, 0.15, 0)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Text = "👑"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 24
+
+PlayerInputBox.Name = "PlayerInputBox"
+PlayerInputBox.Parent = MainFrame
+PlayerInputBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+PlayerInputBox.BorderSizePixel = 0
+PlayerInputBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+PlayerInputBox.Size = UDim2.new(0.8, 0, 0.1, 0)
+PlayerInputBox.Font = Enum.Font.SourceSans
+PlayerInputBox.PlaceholderText = "Enter Player Display Name"
+PlayerInputBox.Text = ""
+PlayerInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlayerInputBox.TextSize = 18
+
+ViewButton.Name = "ViewButton"
+ViewButton.Parent = MainFrame
+ViewButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+ViewButton.BorderSizePixel = 0
+ViewButton.Position = UDim2.new(0.1, 0, 0.35, 0)
+ViewButton.Size = UDim2.new(0.35, 0, 0.1, 0)
+ViewButton.Font = Enum.Font.SourceSansBold
+ViewButton.Text = "View"
+ViewButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ViewButton.TextSize = 18
+
+UnviewButton.Name = "UnviewButton"
+UnviewButton.Parent = MainFrame
+UnviewButton.BackgroundColor3 = Color3.fromRGB(90, 20, 20)
+UnviewButton.BorderSizePixel = 0
+UnviewButton.Position = UDim2.new(0.55, 0, 0.35, 0)
+UnviewButton.Size = UDim2.new(0.35, 0, 0.1, 0)
+UnviewButton.Font = Enum.Font.SourceSansBold
+UnviewButton.Text = "Unview"
+UnviewButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+UnviewButton.TextSize = 18
+
+AddButton.Name = "AddButton"
+AddButton.Parent = MainFrame
+AddButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+AddButton.BorderSizePixel = 0
+AddButton.Position = UDim2.new(0.1, 0, 0.5, 0)
+AddButton.Size = UDim2.new(0.35, 0, 0.1, 0)
+AddButton.Font = Enum.Font.SourceSansBold
+AddButton.Text = "Add ESP"
+AddButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AddButton.TextSize = 18
+
+RemoveButton.Name = "RemoveButton"
+RemoveButton.Parent = MainFrame
+RemoveButton.BackgroundColor3 = Color3.fromRGB(90, 20, 20)
+RemoveButton.BorderSizePixel = 0
+RemoveButton.Position = UDim2.new(0.55, 0, 0.5, 0)
+RemoveButton.Size = UDim2.new(0.35, 0, 0.1, 0)
+RemoveButton.Font = Enum.Font.SourceSansBold
+RemoveButton.Text = "Remove ESP"
+RemoveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RemoveButton.TextSize = 18
+
+ESPListLabel.Name = "ESPListLabel"
+ESPListLabel.Parent = MainFrame
+ESPListLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ESPListLabel.BorderSizePixel = 2
+ESPListLabel.Position = UDim2.new(0.1, 0, 0.65, 0)
+ESPListLabel.Size = UDim2.new(0.8, 0, 0.3, 0)
+ESPListLabel.Font = Enum.Font.SourceSansBold
+ESPListLabel.Text = "ESP List: None"
+ESPListLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+ESPListLabel.TextSize = 14
+ESPListLabel.TextWrapped = true
+
+local dragging = false
+local dragInput, dragStart, startPos
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Variables
+local Camera = workspace.CurrentCamera
+local originalCameraSubject = Camera.CameraSubject
+local espPlayers = {}
+
+-- Functions
+local function viewPlayer(partialDisplayName)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if string.find(string.lower(player.DisplayName), string.lower(partialDisplayName)) then
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                Camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+                return
+            end
+        end
+    end
+    warn("Player not found or not valid")
+end
+
+local function unviewPlayer()
+    Camera.CameraSubject = originalCameraSubject
+end
+
+local function addPlayerToESP(displayNameSubstring)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if string.lower(player.DisplayName):find(string.lower(displayNameSubstring), 1, true) then
+            if not table.find(espPlayers, player.DisplayName) then
+                table.insert(espPlayers, player.DisplayName)
+                ESPListLabel.Text = "ESP List: " .. table.concat(espPlayers, ", ")
+            end
+            return
+        end
+    end
+    warn("Player not found.")
+end
+
+local function removePlayerFromESP(displayNameSubstring)
+    for i, name in ipairs(espPlayers) do
+        if string.lower(name):find(string.lower(displayNameSubstring), 1, true) then
+            table.remove(espPlayers, i)
+            ESPListLabel.Text = #espPlayers > 0 and "ESP List: " .. table.concat(espPlayers, ", ") or "ESP List: None"
+            return
+        end
+    end
+    warn("Player not found in the ESP list.")
+end
+
+local function applyESP()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if table.find(espPlayers, player.DisplayName) then
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                if not player.Character:FindFirstChild("ESPBox") then
+                    local box = Instance.new("BoxHandleAdornment")
+                    box.Name = "ESPBox"
+                    box.Parent = player.Character.HumanoidRootPart
+                    box.Adornee = player.Character.HumanoidRootPart
+                    box.Size = Vector3.new(4, 6, 4)
+                    box.Transparency = 0.5
+                    box.Color3 = Color3.fromRGB(173, 216, 230) -- Light blue
+                    box.AlwaysOnTop = true
+                end
+            end
+        else
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local espBox = player.Character.HumanoidRootPart:FindFirstChild("ESPBox")
+                if espBox then
+                    espBox:Destroy()
+                end
+            end
+        end
+    end
+end
+
+-- Button Connections
+ViewButton.MouseButton1Click:Connect(function()
+    local partialDisplayName = PlayerInputBox.Text
+    if partialDisplayName and partialDisplayName ~= "" then
+        viewPlayer(partialDisplayName)
+    end
+end)
+
+UnviewButton.MouseButton1Click:Connect(function()
+    unviewPlayer()
+end)
+
+AddButton.MouseButton1Click:Connect(function()
+    local displayNameSubstring = PlayerInputBox.Text
+    if displayNameSubstring and displayNameSubstring ~= "" then
+        addPlayerToESP(displayNameSubstring)
+    end
+end)
+
+RemoveButton.MouseButton1Click:Connect(function()
+    local displayNameSubstring = PlayerInputBox.Text
+    if displayNameSubstring and displayNameSubstring ~= "" then
+        removePlayerFromESP(displayNameSubstring)
+    end
+end)
+
+-- RunService ESP Updater
+RunService.RenderStepped:Connect(applyESP)
