@@ -1,0 +1,170 @@
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "👑",        -- Title of the notification
+    Text = "Fake DaHood's Only", -- Text content of the notification
+    Icon = "rbxassetid://1234567890",     -- Optional: Asset ID of an icon (you can use an image from the Roblox asset library)
+    Duration = 5                          -- Duration in seconds (default is 5 seconds)
+})
+
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "👑",        -- Title of the notification
+    Text = "Press C to toggle", -- Text content of the notification
+    Icon = "rbxassetid://1234567890",     -- Optional: Asset ID of an icon (you can use an image from the Roblox asset library)
+    Duration = 5                          -- Duration in seconds (default is 5 seconds)
+})
+
+
+-- SETTINGS
+local Keybind = Enum.KeyCode.C
+local bullettp = true
+-- SETTINGS
+
+local UserInputService = game:GetService("UserInputService")
+local RunService       = game:GetService("RunService")
+local Players          = game:GetService("Players")
+
+local LocalPlayer= Players.LocalPlayer
+local Character = LocalPlayer.Character
+local Camera    = workspace.CurrentCamera
+local Mouse     = LocalPlayer:GetMouse()
+local Target    = nil
+
+function refreshGrip(tool)
+    tool.Parent = LocalPlayer.Backpack;
+    tool.Parent = LocalPlayer.Character;
+ end
+
+function setPosition(tool, pos, oldPos)
+    tool.GripPos = pos
+    tool.Default.Transparency = 1
+    refreshGrip(tool)
+    task.wait(0.03)
+    tool.GripPos = oldPos
+    tool.Default.Transparency = 0
+    refreshGrip(tool)
+ end
+   
+function bulletTeleport(character)
+   local equipped, equippedtool, oldPos;
+
+   local function toolActivated()
+      if bullettp and equippedtool then
+         if Target then
+               local getPos = LocalPlayer.Character.HumanoidRootPart.CFrame:PointToObjectSpace(Target.Character.HumanoidRootPart.Position);
+               local setPos = Vector3.new(-getPos.Z, 0, getPos.X);
+               setPosition(equippedtool, setPos, oldPos);
+         end;
+      end
+   end
+   
+   local function childAdded(tool)
+      if tool:IsA("Tool") and bullettp then
+         equippedtool = tool;
+         oldPos = tool.GripPos;
+         equipped = tool.Activated:Connect(toolActivated);
+      end
+   end
+   
+   local function childRemoved(tool)
+      if tool:IsA("Tool") then
+         equippedtool = nil;
+         if equipped then
+               equipped:Disconnect();
+         end
+      end
+   end
+
+   character.ChildAdded:Connect(childAdded);
+   character.ChildRemoved:Connect(childRemoved);
+end
+
+pcall(bulletTeleport, LocalPlayer.Character)
+
+LocalPlayer.CharacterAdded:Connect(bulletTeleport)
+
+GetClosestToMouse = function()
+    local Target, Closest = nil, 1 / 0
+
+    for _, v in pairs(Players:GetPlayers()) do
+        if (v.Character and v ~= Client and v.Character:FindFirstChild("HumanoidRootPart")) then
+            local Position, OnScreen = Camera:WorldToScreenPoint(v.Character.HumanoidRootPart.Position)
+            local Distance = (Vector2.new(Position.X, Position.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+
+            if (Distance < Closest and OnScreen) then
+                Closest = Distance
+                Target = v
+            end
+        end
+    end
+    return Target
+end
+
+UserInputService.InputBegan:Connect(function(Input, gameProcessedEvent)
+    if gameProcessedEvent then return end
+    -- 
+    if Input.KeyCode == Keybind then
+        if Target == nil then
+            Target = GetClosestToMouse()
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "👑",        -- Title of the notification
+    Text = "Running", -- Text content of the notification
+    Icon = "rbxassetid://1234567890",     -- Optional: Asset ID of an icon (you can use an image from the Roblox asset library)
+    Duration = 5                          -- Duration in seconds (default is 5 seconds)
+})
+        else
+            Target = nil
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "👑",        -- Title of the notification
+    Text = "Off", -- Text content of the notification
+    Icon = "rbxassetid://1234567890",     -- Optional: Asset ID of an icon (you can use an image from the Roblox asset library)
+    Duration = 5                          -- Duration in seconds (default is 5 seconds)
+})
+        end
+    end
+end)
+
+local Argument = ""
+
+function getargument()
+local bytecode = getscriptbytecode(game:GetService("Players").LocalPlayer.PlayerGui.Framework)
+local convertreadable = tostring(bytecode)
+
+for line in convertreadable:gmatch("%w+") do
+    if line:match("UpdateMousePos") then
+        print(line)
+        Argument = line
+    end
+end
+
+end
+
+for i = 1,5 do
+    getargument()
+end
+
+warn(Argument)
+
+local function CharAdded()
+    Character.ChildAdded:Connect(function(tool)
+        if tool:IsA("Tool") then
+            tool.Activated:Connect(function()
+                if Target ~= nil then
+                    local Hit = Target.Character.HumanoidRootPart.CFrame.Position
+                    local PlayerVelocity = Target.Character.HumanoidRootPart.Velocity
+
+                    game:GetService("ReplicatedStorage").MainEvent:FireServer(Argument, Hit + PlayerVelocity * 0.141245121)
+                end
+            end)
+        end
+    end)
+end
+
+
+    
+LocalPlayer.CharacterAdded:Connect(function(newchar)
+    Character = newchar
+    CharAdded()
+end)
+    
+CharAdded()
+
+
