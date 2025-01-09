@@ -36,7 +36,7 @@ TitleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 TitleLabel.BorderSizePixel = 0
 TitleLabel.Size = UDim2.new(1, 0, 0.2, 0)
 TitleLabel.Font = Enum.Font.SourceSansBold
-TitleLabel.Text = "Hitbox GUI"
+TitleLabel.Text = "👑"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.TextSize = 24
 
